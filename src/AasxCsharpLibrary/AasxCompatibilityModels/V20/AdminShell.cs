@@ -2419,7 +2419,8 @@ namespace AasxCompatibilityModels
                         else if (o is char)
                             bs = BitConverter.GetBytes((char)o);
                         else if (o is byte)
-                            bs = BitConverter.GetBytes((byte)o);
+                            // Note: Identity byte conversion not supported in Net8.
+                            bs = new byte[] { (byte)o };
                         else if (o is int)
                             bs = BitConverter.GetBytes((int)o);
                         else if (o is long)
