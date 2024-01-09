@@ -1,13 +1,17 @@
 ﻿
+using AasOperationInvocation;
 using AasxServer;
 using AasxServerStandardBib.Exceptions;
 using AasxServerStandardBib.Interfaces;
 using AasxServerStandardBib.Logging;
 using AasxServerStandardBib.Transformers;
+using AdminShellNS;
+using AdminShellNS.Models;
 using Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -18,12 +22,14 @@ namespace AasxServerStandardBib.Services
         private readonly IAppLogger<SubmodelService> _logger;
         private readonly IAdminShellPackageEnvironmentService _packageEnvService;
         private readonly IMetamodelVerificationService _verificationService;
+        private readonly IOperationReceiver _operationReceiver;
 
-        public SubmodelService(IAppLogger<SubmodelService> logger, IAdminShellPackageEnvironmentService packageEnvService, IMetamodelVerificationService verificationService)
+        public SubmodelService(IAppLogger<SubmodelService> logger, IAdminShellPackageEnvironmentService packageEnvService, IMetamodelVerificationService verificationService, IOperationReceiver operationReceiver)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger)); ;
             _packageEnvService = packageEnvService;
             _verificationService = verificationService;
+            _operationReceiver = operationReceiver;
         }
 
         #region PrivateMethods
@@ -628,6 +634,45 @@ namespace AasxServerStandardBib.Services
             string output = Regex.Replace(fileNameTemp, @"\\", "/");
 
             return output;
+        }
+
+        public OperationResult InvokeOperationSync(string submodelIdentifier, string idShortPath, List<OperationVariable> inputArguments, List<OperationVariable> inoutputArguments, int? timestamp, string requestId)
+        {
+            var submodelElement = GetSubmodelElementByPath(submodelIdentifier, idShortPath);
+            if (submodelElement is not IOperation) {
+                throw new NotFoundException("Operation not found in submodel");
+            }
+            IOperation operation = (IOperation) submodelElement;
+            operation.InputVariables = [.. inputArguments];
+            operation.InoutputVariables = [.. inoutputArguments];
+
+            OperationCommand command = new(_operationReceiver, operation, timestamp, requestId);
+            OperationInvoker invoker = new(command);
+
+            return invoker.Invoke();
+        }
+
+        public OperationHandle InvokeOperationAsync(string submodelIdentifier, string idShortPath, List<OperationVariable> inputArguments, List<OperationVariable> inoutputArguments, int? timestamp, string requestId)
+        {
+            var submodelElement = GetSubmodelElementByPath(submodelIdentifier, idShortPath);
+            if (submodelElement is not IOperation) {
+                throw new NotFoundException("Operation not found in submodel");
+            }
+            IOperation operation = (IOperation) submodelElement;
+            operation.InputVariables = [.. inputArguments];
+            operation.InoutputVariables = [.. inoutputArguments];
+
+            OperationCommand command = new(_operationReceiver, operation, timestamp, requestId);
+            OperationInvoker invoker = new(command);
+
+            var operationHandle = OperationHandle.Create(requestId);
+            invoker.InvokeAsync(operationHandle);
+            return operationHandle;
+        }
+
+        public OperationResult GetOperationAsyncResult(string handleId)
+        {
+            return OperationInvoker.GetAsyncResult(handleId);
         }
     }
 }

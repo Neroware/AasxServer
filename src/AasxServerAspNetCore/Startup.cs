@@ -1,12 +1,14 @@
 ﻿//var builder = WebApplication.CreateBuilder(args);
 //var app = builder.Build();
 
+using AasOperationInvocation;
 using AasSecurity;
 using AasxServer;
 using AasxServerStandardBib.Extensions;
 using AasxServerStandardBib.Interfaces;
 using AasxServerStandardBib.Logging;
 using AasxServerStandardBib.Services;
+using AdminShellNS;
 using IO.Swagger.Controllers;
 using IO.Swagger.Lib.V3.Formatters;
 using IO.Swagger.Lib.V3.Interfaces;
@@ -90,6 +92,7 @@ internal class Startup
         services.AddTransient<ISecurityService, SecurityService>();
         services.AddTransient<IAasRegistryService, AasRegistryService>();
         services.AddTransient<IAasDescriptorPaginationService, AasDescriptorPaginationService>();
+        services.AddTransient<IOperationReceiver, OperationReceiver>();
 
         // Add GraphQL services
         services

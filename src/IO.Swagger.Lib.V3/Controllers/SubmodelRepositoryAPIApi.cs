@@ -910,13 +910,24 @@ namespace IO.Swagger.Controllers
 
             //TODO: Uncomment the next line to return response 0 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(0, default(Result));
-            string exampleJson = null;
-            exampleJson = "\"\"";
 
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<OperationResult>(exampleJson)
-            : default(OperationResult);            //TODO: Change the data returned
-            return new ObjectResult(example);
+            // string exampleJson = null;
+            // exampleJson = "\"\"";
+
+            // var example = exampleJson != null
+            // ? JsonConvert.DeserializeObject<OperationResult>(exampleJson)
+            // : default(OperationResult);            //TODO: Change the data returned
+            // return new ObjectResult(example);
+
+            var invoked = _submodelService.GetOperationAsyncResult(handleId);
+            
+            var result = new OperationResult() {
+                ExecutionState = (ExecutionState) invoked.ExecutionState,
+                RequestId = invoked.RequestId,
+    	        InoutputArguments = invoked.InoutputArguments,
+                OutputArguments = invoked.OutputArguments,
+            };
+            return new ObjectResult(result);
         }
 
         /// <summary>
@@ -1697,7 +1708,34 @@ namespace IO.Swagger.Controllers
             //TODO: Uncomment the next line to return response 0 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(0, default(Result));
 
-            throw new System.NotImplementedException();
+            var decodedSubmodelIdentifier = _decoderService.Decode("submodelIdentifier", submodelIdentifier);
+            _logger.LogInformation($"Received request to asynchronously invoke the operation at {idShortPath} from the submodel with id {decodedSubmodelIdentifier}");
+            if (!Program.noSecurity)
+            {
+                var submodel = _submodelService.GetSubmodelById(decodedSubmodelIdentifier);
+                User.Claims.ToList().Add(new Claim("idShortPath", submodel.IdShort + "." + idShortPath));
+                var claimsList = new List<Claim>(User.Claims)
+                {
+                    new Claim("IdShortPath", submodel.IdShort + "." + idShortPath)
+                };
+                var identity = new ClaimsIdentity(claimsList, "AasSecurityAuth");
+                var principal = new System.Security.Principal.GenericPrincipal(identity, null);
+                var authResult = _authorizationService.AuthorizeAsync(principal, submodel, "SecurityPolicy").Result;
+                if (!authResult.Succeeded)
+                {
+                    throw new NotAllowed(authResult.Failure.FailureReasons.First().Message);
+                }
+            }
+
+            var inputArguments = body.InputArguments;
+            var inoutputArguments = body.InoutputArguments;
+            var handle = _submodelService.InvokeOperationAsync(submodelIdentifier, idShortPath, inputArguments, inoutputArguments, body.Timeout, body.RequestId);
+            
+            var result = new OperationHandle() {
+                RequestId = handle.RequestId,
+                HandleId = handle.HandleId
+            };
+            return new ObjectResult(result);
         }
 
         /// <summary>
@@ -1802,13 +1840,49 @@ namespace IO.Swagger.Controllers
 
             //TODO: Uncomment the next line to return response 0 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(0, default(Result));
-            string exampleJson = null;
-            exampleJson = "\"\"";
 
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<OperationResult>(exampleJson)
-            : default(OperationResult);            //TODO: Change the data returned
-            return new ObjectResult(example);
+            // string exampleJson = null;
+            // exampleJson = "\"\"";
+
+            // var example = exampleJson != null
+            // ? JsonConvert.DeserializeObject<OperationResult>(exampleJson)
+            // : default(OperationResult);            //TODO: Change the data returned
+            // return new ObjectResult(example);
+
+            if (_async ?? false) {
+                return InvokeOperationAsync(body, submodelIdentifier, idShortPath);
+            }
+
+            var decodedSubmodelIdentifier = _decoderService.Decode("submodelIdentifier", submodelIdentifier);
+            _logger.LogInformation($"Received request to invoke the operation at {idShortPath} from the submodel with id {decodedSubmodelIdentifier}");
+            if (!Program.noSecurity)
+            {
+                var submodel = _submodelService.GetSubmodelById(decodedSubmodelIdentifier);
+                User.Claims.ToList().Add(new Claim("idShortPath", submodel.IdShort + "." + idShortPath));
+                var claimsList = new List<Claim>(User.Claims)
+                {
+                    new Claim("IdShortPath", submodel.IdShort + "." + idShortPath)
+                };
+                var identity = new ClaimsIdentity(claimsList, "AasSecurityAuth");
+                var principal = new System.Security.Principal.GenericPrincipal(identity, null);
+                var authResult = _authorizationService.AuthorizeAsync(principal, submodel, "SecurityPolicy").Result;
+                if (!authResult.Succeeded)
+                {
+                    throw new NotAllowed(authResult.Failure.FailureReasons.First().Message);
+                }
+            }
+
+            var inputArguments = body.InputArguments;
+            var inoutputArguments = body.InoutputArguments;
+            var invoked = _submodelService.InvokeOperationSync(submodelIdentifier, idShortPath, inputArguments, inoutputArguments, body.Timeout, body.RequestId);
+
+            var result = new OperationResult() {
+                ExecutionState = (ExecutionState) invoked.ExecutionState,
+                RequestId = invoked.RequestId,
+    	        InoutputArguments = invoked.InoutputArguments,
+                OutputArguments = invoked.OutputArguments,
+            };
+            return new ObjectResult(result);
         }
 
         /// <summary>

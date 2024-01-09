@@ -1,0 +1,13 @@
+using System.Threading.Tasks;
+using AdminShellNS.Models;
+
+namespace AdminShellNS 
+{
+    public interface IOperationCommand
+    {
+        IOperationReceiver OperationReceiver { get; init; }
+        
+        OperationResult Execute();
+        Task ExecuteAsync(OperationResult inoutResult);
+    }
+}

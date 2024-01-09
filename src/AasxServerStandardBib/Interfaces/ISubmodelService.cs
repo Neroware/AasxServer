@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using AdminShellNS.Models;
 
 namespace AasxServerStandardBib.Interfaces
 {
@@ -22,5 +23,8 @@ namespace AasxServerStandardBib.Interfaces
         void ReplaceSubmodelElementByPath(string submodelIdentifier, string idShortPath, ISubmodelElement newSme);
         void UpdateSubmodelById(string submodelIdentifier, ISubmodel newSubmodel);
         void UpdateSubmodelElementByPath(string submodelIdentifier, string idShortPath, ISubmodelElement newSme);
+        OperationResult InvokeOperationSync(string submodelIdentifier, string idShortPath, List<OperationVariable> inputArguments, List<OperationVariable> inoutputArguments, int? timestamp, string requestId);
+        OperationHandle InvokeOperationAsync(string submodelIdentifier, string idShortPath, List<OperationVariable> inputArguments, List<OperationVariable> inoutputArguments, int? timestamp, string requestId);
+        OperationResult GetOperationAsyncResult(string handleId);
     }
 }
