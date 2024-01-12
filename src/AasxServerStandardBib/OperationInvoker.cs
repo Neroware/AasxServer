@@ -1,28 +1,18 @@
 using System.Collections.Generic;
-using AasxServerStandardBib.Exceptions;
 using AdminShellNS.Models;
 using AdminShellNS;
+using System.Threading.Tasks;
 
 namespace AasOperationInvocation 
 {
     public class OperationInvoker : IOperationInvoker
     {
-        private static readonly Dictionary<string, OperationResult> _asyncStates = new();
         public IOperationCommand Command { get; init; }
 
-        public static OperationResult GetAsyncResult(string handleId)
-        {
-            if (!_asyncStates.ContainsKey(handleId)) {
-                throw new NotFoundException("No invocation at this handle");
-            }
-            var result = _asyncStates[handleId];
-            if (result.ExecutionState != ExecutionState.Initiated && result.ExecutionState != ExecutionState.Running) {
-                _asyncStates.Remove(handleId);
-            }
-            return result;
-        }
+        private static readonly Dictionary<string, OperationHandle> _asyncHandles = [];
+        private static long _asyncHandleCounter = 0;
 
-        public OperationInvoker(IOperationCommand command) 
+        public OperationInvoker(IOperationCommand command)
         {
             Command = command;
         }
@@ -32,14 +22,31 @@ namespace AasOperationInvocation
             return Command.Execute();
         }
 
-        public async void InvokeAsync(OperationHandle operationHandle)
+        public Task<OperationResult> InvokeAsync(out OperationHandle operationHandle)
         {
-            OperationResult operationResult = new() {
-                RequestId = operationHandle.RequestId,
-                ExecutionState = ExecutionState.Initiated
+            operationHandle = new() {
+                HandleId = "" + _asyncHandleCounter++,
+                ExecutionState = ExecutionState.InitiatedEnum
             };
-            _asyncStates.Add(operationHandle.HandleId, operationResult);
-            await Command.ExecuteAsync(operationResult);
+            _asyncHandles.Add(operationHandle.HandleId, operationHandle);
+            operationHandle.Task = Command.ExecuteAsync(in operationHandle);
+            return operationHandle.Task;
+        }
+
+        public static OperationResult GetAsyncResult(string handleId)
+        {
+            OperationHandle operationHandle = _asyncHandles[handleId];
+
+            // Remove if terminated
+            if ((int) operationHandle.ExecutionState > 1) {
+                _asyncHandles.Remove(handleId);
+                return operationHandle.Task.GetAwaiter().GetResult();
+            }
+            
+            return new OperationResult() {
+                RequestId = operationHandle.RequestId,
+                ExecutionState = operationHandle.ExecutionState
+            };
         }
     }
 }

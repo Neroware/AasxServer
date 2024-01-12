@@ -665,8 +665,8 @@ namespace AasxServerStandardBib.Services
             OperationCommand command = new(_operationReceiver, operation, timestamp, requestId);
             OperationInvoker invoker = new(command);
 
-            var operationHandle = OperationHandle.Create(requestId);
-            invoker.InvokeAsync(operationHandle);
+            invoker.InvokeAsync(out OperationHandle operationHandle);
+            operationHandle.RequestId = requestId;
             return operationHandle;
         }
 

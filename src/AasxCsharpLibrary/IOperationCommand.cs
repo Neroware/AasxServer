@@ -8,6 +8,6 @@ namespace AdminShellNS
         IOperationReceiver OperationReceiver { get; init; }
         
         OperationResult Execute();
-        Task ExecuteAsync(OperationResult inoutResult);
+        Task<OperationResult> ExecuteAsync(in OperationHandle operationHandle);
     }
 }

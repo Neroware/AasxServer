@@ -1727,9 +1727,7 @@ namespace IO.Swagger.Controllers
                 }
             }
 
-            var inputArguments = body.InputArguments;
-            var inoutputArguments = body.InoutputArguments;
-            var handle = _submodelService.InvokeOperationAsync(submodelIdentifier, idShortPath, inputArguments, inoutputArguments, body.Timeout, body.RequestId);
+            var handle = _submodelService.InvokeOperationAsync(submodelIdentifier, idShortPath, body.InputArguments, body.InoutputArguments, body.Timeout, body.RequestId);
             
             var result = new OperationHandle() {
                 RequestId = handle.RequestId,

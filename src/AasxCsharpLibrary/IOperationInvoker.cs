@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AdminShellNS.Models;
 
 namespace AdminShellNS
@@ -7,7 +8,6 @@ namespace AdminShellNS
         IOperationCommand Command { get; init; }
 
         OperationResult Invoke();
-        void InvokeAsync(OperationHandle operationHandle);
-
+        Task<OperationResult> InvokeAsync(out OperationHandle operationHandle);
     }
 }
