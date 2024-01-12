@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using AdminShellNS.Models;
 using AdminShellNS;
-using Org.BouncyCastle.Asn1.Cms;
 
 namespace AasOperationInvocation
 {
@@ -13,17 +12,17 @@ namespace AasOperationInvocation
             throw new NotImplementedException("invoking operations not yet supported");
         }
 
-        public Task<OperationResult> OnOperationInvokeAsync(OperationHandle operationHandle, IOperation operation, int? timestamp, string requestId)
+        public async Task<OperationResult> OnOperationInvokeAsync(string handleId, IOperation operation, int? timestamp, string requestId)
         {
             // Console.WriteLine("Task initiated...");
-            // operationHandle.ExecutionState = ExecutionState.InitiatedEnum;
+            // OperationInvoker.UpdateExecutionState(handleId, ExecutionState.InitiatedEnum);
 
             // Console.WriteLine("Task running...");
-            // operationHandle.ExecutionState = ExecutionState.RunningEnum;
+            // OperationInvoker.UpdateExecutionState(handleId, ExecutionState.RunningEnum);
             // await Task.Delay(5000);
 
             // Console.WriteLine("Task done...");
-            // operationHandle.ExecutionState = ExecutionState.CompletedEnum;
+            // OperationInvoker.UpdateExecutionState(handleId, ExecutionState.CompletedEnum);
 
             // return new OperationResult() { ExecutionState = ExecutionState.CompletedEnum };
 

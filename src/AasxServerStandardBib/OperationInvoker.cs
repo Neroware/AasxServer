@@ -29,7 +29,7 @@ namespace AasOperationInvocation
                 ExecutionState = ExecutionState.InitiatedEnum
             };
             _asyncHandles.Add(operationHandle.HandleId, operationHandle);
-            operationHandle.Task = Command.ExecuteAsync(in operationHandle);
+            operationHandle.Task = Command.ExecuteAsync(operationHandle.HandleId);
             return operationHandle.Task;
         }
 
@@ -47,6 +47,11 @@ namespace AasOperationInvocation
                 RequestId = operationHandle.RequestId,
                 ExecutionState = operationHandle.ExecutionState
             };
+        }
+
+        public static void UpdateExecutionState(string handleId, ExecutionState executionState)
+        {
+            _asyncHandles[handleId].ExecutionState = executionState;
         }
     }
 }

@@ -25,9 +25,9 @@ namespace AasOperationInvocation
             return OperationReceiver.OnOperationInvoke(_operation, _timestamp, _requestId);
         }
 
-        public Task<OperationResult> ExecuteAsync(in OperationHandle operationHandle)
+        public Task<OperationResult> ExecuteAsync(string handleId)
         {
-            return OperationReceiver.OnOperationInvokeAsync(operationHandle, _operation, _timestamp, _requestId);
+            return OperationReceiver.OnOperationInvokeAsync(handleId, _operation, _timestamp, _requestId);
         }
 
     }
