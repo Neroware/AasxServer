@@ -45,7 +45,8 @@ namespace AasOperationInvocation
             
             return new OperationResult() {
                 RequestId = operationHandle.RequestId,
-                ExecutionState = operationHandle.ExecutionState
+                ExecutionState = operationHandle.ExecutionState,
+                Message = ""
             };
         }
 
