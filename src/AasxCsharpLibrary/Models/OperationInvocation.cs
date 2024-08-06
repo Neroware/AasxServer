@@ -19,6 +19,22 @@ namespace AdminShellNS.Models
         public string RequestId { get; set; }
 
         /// <summary>
+        /// Gets or Sets SubmodelId
+        /// </summary>
+
+        [MaxLength(128)]
+        [DataMember(Name = "submodelId")]
+        public string SubmodelId { get; set; }
+
+        /// <summary>
+        /// Gets or Sets OperationIdShort
+        /// </summary>
+
+        [MaxLength(128)]
+        [DataMember(Name = "operationIdShort")]
+        public string OperationIdShort { get; set; }
+
+        /// <summary>
         /// Gets or Sets InputVariables
         /// </summary>
         

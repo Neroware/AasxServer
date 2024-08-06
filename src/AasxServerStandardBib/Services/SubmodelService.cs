@@ -646,7 +646,7 @@ namespace AasxServerStandardBib.Services
             operation.InputVariables = [.. inputArguments];
             operation.InoutputVariables = [.. inoutputArguments];
 
-            OperationCommand command = new(_operationReceiver, operation, timestamp, requestId);
+            OperationCommand command = new(_operationReceiver, operation, submodelIdentifier, timestamp, requestId);
             OperationInvoker invoker = new(command);
 
             return invoker.Invoke();
@@ -662,7 +662,7 @@ namespace AasxServerStandardBib.Services
             operation.InputVariables = [.. inputArguments];
             operation.InoutputVariables = [.. inoutputArguments];
 
-            OperationCommand command = new(_operationReceiver, operation, timestamp, requestId);
+            OperationCommand command = new(_operationReceiver, operation, submodelIdentifier, timestamp, requestId);
             OperationInvoker invoker = new(command);
 
             invoker.InvokeAsync(out OperationHandle operationHandle);
