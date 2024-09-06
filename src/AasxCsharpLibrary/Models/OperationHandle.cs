@@ -11,6 +11,12 @@ namespace AdminShellNS.Models
     public partial class OperationHandle
     {
         /// <summary>
+        /// Gets and Inits Task
+        /// </summary>
+        
+        public Task<OperationResult> Task { get; init; }
+
+        /// <summary>
         /// Gets or Sets RequestId
         /// </summary>
 
@@ -25,13 +31,6 @@ namespace AdminShellNS.Models
         [MaxLength(128)]
         [DataMember(Name = "handleId")]
         public string HandleId { get; set; }
-
-        /// <summary>
-        /// Gets or Sets Task
-        /// </summary>
-
-        [DataMember(Name = "task")]
-        public Task<OperationResult> Task { get; set; }
 
         /// <summary>
         /// Gets or Sets ExecutionState

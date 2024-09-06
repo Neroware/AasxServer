@@ -8,7 +8,7 @@ namespace AdminShellNS.Models
     /// 
     /// </summary>
     [DataContract]
-    public class OperationInvocation
+    public partial class OperationInvocation
     {
         /// <summary>
         /// Gets or Sets RequestId

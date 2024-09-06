@@ -12,7 +12,7 @@ namespace AasOperationInvocation
             throw new NotImplementedException("invoking operations not yet supported");
         }
 
-        public async Task<OperationResult> OnOperationInvokeAsync(string handleId, IOperation operation, string submodelId, int? timestamp, string requestId)
+        public Task<OperationResult> OnOperationInvokeAsync(string handleId, IOperation operation, string submodelId, int? timestamp, string requestId)
         {
             // Console.WriteLine("Task initiated...");
             // OperationInvoker.UpdateExecutionState(handleId, ExecutionState.InitiatedEnum);

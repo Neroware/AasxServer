@@ -25,11 +25,11 @@ namespace AasOperationInvocation
         public Task<OperationResult> InvokeAsync(out OperationHandle operationHandle)
         {
             operationHandle = new() {
-                HandleId = "" + _asyncHandleCounter++,
-                ExecutionState = ExecutionState.InitiatedEnum
+                HandleId = "" + _asyncHandleCounter,
+                ExecutionState = ExecutionState.InitiatedEnum,
+                Task = Command.ExecuteAsync("" + _asyncHandleCounter++)
             };
             _asyncHandles.Add(operationHandle.HandleId, operationHandle);
-            operationHandle.Task = Command.ExecuteAsync(operationHandle.HandleId);
             return operationHandle.Task;
         }
 
@@ -40,7 +40,7 @@ namespace AasOperationInvocation
             // Remove if terminated
             if ((int) operationHandle.ExecutionState > 1) {
                 _asyncHandles.Remove(handleId);
-                return operationHandle.Task.GetAwaiter().GetResult();
+                return operationHandle.Task.Result;
             }
             
             return new OperationResult() {
