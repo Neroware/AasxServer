@@ -672,7 +672,7 @@ namespace AasxServerStandardBib.Services
 
         public OperationResult GetOperationAsyncResult(string handleId)
         {
-            return OperationInvoker.GetAsyncResult(handleId);
+            return _operationReceiver.GetResult(handleId);
         }
     }
 }

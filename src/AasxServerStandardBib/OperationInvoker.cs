@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using AdminShellNS.Models;
 using AdminShellNS;
 using System.Threading.Tasks;
@@ -8,8 +7,6 @@ namespace AasOperationInvocation
     public class OperationInvoker : IOperationInvoker
     {
         public IOperationCommand Command { get; init; }
-
-        private static readonly Dictionary<string, OperationHandle> _asyncHandles = [];
         private static long _asyncHandleCounter = 0;
 
         public OperationInvoker(IOperationCommand command)
@@ -29,30 +26,7 @@ namespace AasOperationInvocation
                 ExecutionState = ExecutionState.InitiatedEnum,
                 Task = Command.ExecuteAsync("" + _asyncHandleCounter++)
             };
-            _asyncHandles.Add(operationHandle.HandleId, operationHandle);
             return operationHandle.Task;
-        }
-
-        public static OperationResult GetAsyncResult(string handleId)
-        {
-            OperationHandle operationHandle = _asyncHandles[handleId];
-
-            // Remove if terminated
-            if ((int) operationHandle.ExecutionState > 1) {
-                _asyncHandles.Remove(handleId);
-                return operationHandle.Task.Result;
-            }
-            
-            return new OperationResult() {
-                RequestId = operationHandle.RequestId,
-                ExecutionState = operationHandle.ExecutionState,
-                Message = ""
-            };
-        }
-
-        public static void UpdateExecutionState(string handleId, ExecutionState executionState)
-        {
-            _asyncHandles[handleId].ExecutionState = executionState;
         }
     }
 }
