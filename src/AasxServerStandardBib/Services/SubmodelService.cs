@@ -644,29 +644,9 @@ namespace AasxServerStandardBib.Services
             }
             IOperation operation = (IOperation) submodelElement;
 
-            // TODO Currenty only supports properties!
-            for (int i = 0; i < inputArguments.Count && i < operation.InputVariables.Count; i++) {
-                if (operation.InputVariables[i].Value is Property va && inputArguments[i].Value is Property arg) 
-                    va.Value = arg.Value;
-            }
-            for (int i = 0; i < inoutputArguments.Count && i < operation.InoutputVariables.Count; i++) {
-                if (operation.InoutputVariables[i].Value is Property va && inoutputArguments[i].Value is Property arg) 
-                    va.Value = arg.Value;
-            }
-
-            OperationCommand command = new(_operationReceiver, operation, submodelIdentifier, timestamp, requestId);
+            OperationCommand command = new(_operationReceiver, operation, inputArguments, inoutputArguments, submodelIdentifier, timestamp, requestId);
             OperationInvoker invoker = new(command);
             OperationResult result = invoker.Invoke();
-
-            // TODO Currenty only supports properties!
-            for (int i = 0; i < result.InoutputArguments.Count && i < operation.InoutputVariables.Count; i++) {
-                if (operation.InoutputVariables[i].Value is Property va && result.InoutputArguments[i].Value is Property arg) 
-                    va.Value = arg.Value;
-            }
-            for (int i = 0; i < result.OutputArguments.Count && i < operation.OutputVariables.Count; i++) {
-                if (operation.OutputVariables[i].Value is Property va && result.OutputArguments[i].Value is Property arg) 
-                    va.Value = arg.Value;
-            }
 
             return result;
         }
@@ -679,17 +659,7 @@ namespace AasxServerStandardBib.Services
             }
             IOperation operation = (IOperation) submodelElement;
             
-            // TODO Currenty only supports properties!
-            for (int i = 0; i < inputArguments.Count && i < operation.InputVariables.Count; i++) {
-                if (operation.InputVariables[i].Value is Property va && inputArguments[i].Value is Property arg) 
-                    va.Value = arg.Value;
-            }
-            for (int i = 0; i < inoutputArguments.Count && i < operation.InoutputVariables.Count; i++) {
-                if (operation.InoutputVariables[i].Value is Property va && inoutputArguments[i].Value is Property arg) 
-                    va.Value = arg.Value;
-            }
-
-            OperationCommand command = new(_operationReceiver, operation, submodelIdentifier, timestamp, requestId);
+            OperationCommand command = new(_operationReceiver, operation, inputArguments, inoutputArguments, submodelIdentifier, timestamp, requestId);
             OperationInvoker invoker = new(command);
 
             invoker.InvokeAsync(out OperationHandle operationHandle);
